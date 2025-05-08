@@ -1,96 +1,83 @@
 import subprocess
 import sys
+import os
+import re
+import requests
+from urllib.parse import urlparse
 
-# מתקין את הספריות הדרושות אם הן לא מותקנות
+# התקנת ספריות אם צריך
 def install_requirements():
     try:
-        import requests
-        import bs4
+        import requests  # noqa
     except ImportError:
-        print("📦 מתקין ספריות נדרשות (requests, beautifulsoup4)...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "requests", "beautifulsoup4"])
+        print("📦 Installing required libraries...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
 
-# קורא לפונקציה לפני הכל
 install_requirements()
 
-# ממשיך לשאר הקוד
-import os
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
-import re
-
-BASE_URL = "https://data.gov.il"
-DATASETS_URL = f"{BASE_URL}/dataset"
+# --- הגדרות בסיס ---
+API_BASE = "https://data.gov.il/api/3/action"
 OUTPUT_DIR = "datasets"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
+# הפיכת שם תיקייה לחוקי
 def slugify(text):
     return re.sub(r'[\W_]+', '-', text.lower()).strip('-')
 
-def fetch_all_dataset_links():
-    print("🔍 מחפש את כל הדאטהסטים הזמינים...")
-    dataset_links = []
-    page = 1
+# שליפת כל המאגרים שמכילים קובצי XLSX
+def fetch_packages_with_xlsx(limit=2000):
+    print("📡 Fetching list of datasets with XLSX files...")
+    url = f"{API_BASE}/package_search?q=format:XLSX&rows={limit}"
+    res = requests.get(url, headers=HEADERS)
+    res.raise_for_status()
+    return res.json().get("result", {}).get("results", [])
 
-    while True:
-        url = f"{DATASETS_URL}?page={page}"
-        res = requests.get(url, headers=HEADERS)
-        if res.status_code != 200:
-            break
+# הורדת קובץ בודד
+def download_file(url, save_path):
+    try:
+        r = requests.get(url, headers=HEADERS)
+        r.raise_for_status()
+        with open(save_path, "wb") as f:
+            f.write(r.content)
+        print(f"✅ Downloaded: {save_path}")
+    except Exception as e:
+        print(f"❌ Failed to download {url}: {e}")
 
-        soup = BeautifulSoup(res.text, 'html.parser')
-        links = soup.select('.dataset-content h3 a')
-        if not links:
-            break
+# עיבוד מאגר יחיד
+def process_package(pkg):
+    title = pkg.get("title") or "unnamed_dataset"
+    pkg_id = pkg.get("id")
+    folder_name = slugify(title)
+    folder_path = os.path.join(OUTPUT_DIR, folder_name)
+    os.makedirs(folder_path, exist_ok=True)
 
-        for a in links:
-            href = a.get('href')
-            if href:
-                dataset_links.append(urljoin(BASE_URL, href))
-        page += 1
+    print(f"\n📁 Processing dataset: {title}")
 
-    print(f"✅ נמצאו {len(dataset_links)} דפים של דאטהסטים")
-    return dataset_links
+    # קבלת כל המשאבים של המאגר
+    res = requests.get(f"{API_BASE}/package_show?id={pkg_id}", headers=HEADERS)
+    res.raise_for_status()
+    resources = res.json().get("result", {}).get("resources", [])
 
-def download_files_from_dataset(dataset_url):
-    print(f"\n📥 עובד על: {dataset_url}")
-    res = requests.get(dataset_url, headers=HEADERS)
-    soup = BeautifulSoup(res.text, 'html.parser')
+    for resource in resources:
+        if resource.get("format", "").lower() == "xlsx":
+            file_url = resource.get("url")
+            if file_url:
+                filename = os.path.basename(urlparse(file_url).path)
+                save_path = os.path.join(folder_path, filename)
+                if os.path.exists(save_path):
+                    print(f"↪ Already exists: {filename}")
+                else:
+                    print(f"⬇ Downloading file: {filename}")
+                    download_file(file_url, save_path)
 
-    title_tag = soup.select_one('h1')
-    if not title_tag:
-        print("❌ לא נמצא שם לדאטהסט")
-        return
-
-    dataset_name = slugify(title_tag.text)
-    dataset_folder = os.path.join(OUTPUT_DIR, dataset_name)
-    os.makedirs(dataset_folder, exist_ok=True)
-
-    for link in soup.find_all("a", href=True):
-        href = link["href"]
-        if ".xlsx" in href.lower():
-            file_url = urljoin(BASE_URL, href)
-            filename = os.path.basename(urlparse(file_url).path)
-            save_path = os.path.join(dataset_folder, filename)
-
-            if os.path.exists(save_path):
-                print(f"↪ כבר הורד: {filename}")
-                continue
-
-            try:
-                print(f"⬇ מוריד: {filename}")
-                r = requests.get(file_url, headers=HEADERS)
-                with open(save_path, "wb") as f:
-                    f.write(r.content)
-            except Exception as e:
-                print(f"⚠️ שגיאה בהורדת {filename}: {e}")
-
+# הרצת הכל
 def main():
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    dataset_links = fetch_all_dataset_links()
-    for url in dataset_links:
-        download_files_from_dataset(url)
+    packages = fetch_packages_with_xlsx()
+    print(f"🔍 Total datasets found: {len(packages)}")
+    for pkg in packages:
+        process_package(pkg)
 
 if __name__ == "__main__":
     main()
