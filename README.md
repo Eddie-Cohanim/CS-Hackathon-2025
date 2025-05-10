@@ -37,8 +37,7 @@ Congratulations on reaching the finals of the CS Hackathon at the Technion! This
 ├── app.py                   # Flask entrypoint
 ├── fact_matcher.py          # Core RAG-lookup logic
 ├── 08_25_120b_small.jsonl   # RAG dataset (exported from CBS)
-├── banks/                   # (if you wish to split by subject)
-│   └── … .json
+├── subject_keywords.py                  # (if you wish to split by subject)
 └── userscript/
     └── gir.user.js          # Tampermonkey script
 ```
