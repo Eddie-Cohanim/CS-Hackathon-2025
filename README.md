@@ -1,7 +1,5 @@
 # CS-Hackathon-2025
 
-Thought for a couple of seconds
-
 
 # GIR Project – Global Israeli RAG Fact-Checker
 
