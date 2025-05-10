@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Demo – fact-checker playground</title>
+<style>
+  body        { font-family: "Segoe UI", sans-serif; line-height:1.6; margin:2rem; }
+  article      { max-width: 60ch; margin: 0 auto 4rem; }
+  h1, h2       { text-align: center; }
+  .truth-star  { font-size: .75em; color: #888; cursor: help; }
+  /* soft boxes just to separate the two articles visually */
+  article      { padding:1.5rem 2rem; border-radius:8px; box-shadow:0 0 4px rgba(0,0,0,.08); }
+  article.true { background:#f6fffa; }
+  article.mix  { background:#fffdf6; }
+</style>
+</head>
+<body>
+
+<h1>דף תרגול – בודק עובדות</h1>
+
+<!-- ───────────────────────────────────────────────────────── Article A -->
+<article class="true">
+  <h2>כתבה A – 100 % עובדות</h2>
+
+  <p>התוצר המקומי הגולמי עלה ב-2.1% בחישוב שנתי (0.5% בחישוב רבעוני).<sup class="truth-star" title="true">★</sup></p>
+
+  <p>עליה של 9.6% בהוצאה לצריכה פרטית (2.3% בחישוב רבעוני).<sup class="truth-star" title="true">★</sup></p>
+
+  <p>עליה של 10.1% בהשקעות בנכסים קבועים (2.4% בחישוב רבעוני).<sup class="truth-star" title="true">★</sup></p>
+
+  <p>עליה של 6.0% בתמ״ג.<sup class="truth-star" title="true">★</sup></p>
+
+  <p>עליה של 1.0% בסך התוצר המקומי הגולמי וירידה של 0.3% בתוצר לנפש.<sup class="truth-star" title="true">★</sup></p>
+</article>
+
+<!-- ───────────────────────────────────────────────────────── Article B -->
+<article class="mix">
+  <h2>כתבה B – נכון / לא-נכון (מעורב)</h2>
+
+  <!-- FALSE: inflated number -->
+  <p>התוצר המקומי הגולמי עלה ב-<strong>12%</strong> בחישוב שנתי.<sup class="truth-star" title="false">★</sup></p>
+
+  <!-- TRUE: unchanged -->
+  <p>עליה של 9.6% בהוצאה לצריכה פרטית (2.3% בחישוב רבעוני).<sup class="truth-star" title="true">★</sup></p>
+
+  <!-- FALSE: direction reversed -->
+  <p><strong>ירידה</strong> של 25% בהשקעות בנכסים קבועים.<sup class="truth-star" title="false">★</sup></p>
+
+  <!-- TRUE: unchanged -->
+  <p>עליה של 6.0% בתמ״ג.<sup class="truth-star" title="true">★</sup></p>
+
+  <!-- FALSE: changed value -->
+  <p>עליה של 8% ביצוא הסחורות והשירותים למעט חברות הזנק ויהלומים.<sup class="truth-star" title="false">★</sup></p>
+</article>
+
+</body>
+</html>
