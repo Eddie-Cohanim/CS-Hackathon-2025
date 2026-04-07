@@ -1,0 +1,40 @@
+{
+    "name": "__MSG_appName__",
+    "description": "__MSG_appDesc__",
+    "default_locale": "en", 
+    "version": "2.1.3",
+    "manifest_version": 3,
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["scripts/localization.js", "scripts/contentHighlighter.js"],
+            "run_at": "document_idle"
+        }
+    ],
+    "action": {
+        "default_title": "__MSG_appName__",
+        "default_icon": {
+            "16": "Images/Legit_logo_16.png",
+            "32": "Images/Legit_logo_32.png",
+            "48": "Images/Legit_logo_48.png",
+            "128": "Images/Legit_logo_128.png"
+        }
+    },
+    "icons": {
+        "16": "Images/Legit_logo_16.png",
+        "32": "Images/Legit_logo_32.png",
+        "48": "Images/Legit_logo_48.png",
+        "128": "Images/Legit_logo_128.png"
+    },
+    "host_permissions": [
+        "*://*/*",
+        "https://generativelanguage.googleapis.com/*"
+    ],
+    "permissions": ["activeTab", "scripting", "storage", "sidePanel"],
+    "background": {
+        "service_worker": "scripts/background.js"
+    },
+    "side_panel": {
+        "default_path": "Legit.html"
+    }
+}

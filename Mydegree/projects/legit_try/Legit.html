@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Legit - News Legitimacy Checker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="legit.css">
+</head>
+<body>
+    <div id="setupView">
+        <div class="logo-header">
+            <div class="lang-switch">
+                <button id="langEn" class="lang-btn active">EN</button>
+                <button id="langHe" class="lang-btn">עב</button>
+            </div>
+            <img src="Images/Legit_logo_128.png" alt="Legit Logo">
+            <h1 data-i18n="appName">Legit</h1>
+            <p class="tagline" data-i18n="tagline">FROM PC</p>
+        </div>
+
+        <div class="input-card">
+            <div class="input-group">
+                <label for="apiKeyInput" data-i18n="apiKeyLabel">
+                    🔑 Gemini API Key
+                </label>
+                <input 
+                    id="apiKeyInput" 
+                    type="password" 
+                    data-i18n-placeholder="apiKeyPlaceholder"
+                    placeholder="Enter your API key..."
+                    autocomplete="off"
+                />
+                <button id="saveKeyBtn" data-i18n="saveKeyBtn">
+                    💾 Save API Key
+                </button>
+            </div>
+        </div>
+
+        <div id="statusMsg" class="status"></div>
+
+        <button id="activateBtn" disabled data-i18n="analyzeBtn">
+            🔍 Analyze This Page
+        </button>
+
+        <div id="loader" class="loader"></div>
+
+        <p class="api-help">
+            <span data-i18n="noKey">Don't have an API key?</span> 
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" data-i18n="getKey">Get one free</a>
+            <br>
+            <span data-i18n="videoTutorial"></span>
+            <a href="https://www.youtube.com/watch?v=RVGbLSVFtIk" target="_blank" data-i18n="clickToWatch">Click to watch</a>
+        </p>
+    </div>
+
+    <div id="resultsView">
+        <div id="pageHeader" class="mint-box"></div>
+
+        <div id="overallScore" class="mint-box">
+            <div class="score-header">
+                <h2 data-i18n="overallScoreTitle">Overall Legitimacy Score</h2>
+                <div id="scoreLabel"></div>
+            </div>
+            <div class="score-display">
+                <div id="scoreSpinner" class="score-spinner"></div>
+                <div id="scoreValue" style="display: none">--</div>
+                <div class="score-bar-container">
+                    <div id="scoreBar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div id="scoreSummary" class="summary-container">
+                <div class="summary-body">
+                    <h3 class="summary-title">Analysis Summary</h3>
+                    <div class="summary-content" id="summaryText">
+                    </div>
+                </div>
+            </div>
+                <div class="agentExplanations">
+                    <div id="agentGrid"></div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="newAnalysisBtn" data-i18n="newScanBtn">
+                ✨ New Analysis
+            </button>
+            <button id="reanalyzeBtn" data-i18n="reanalyzeBtn">
+                🔄 Re-Analyze Page
+            </button>
+        </div>
+    </div>
+
+    <script src="scripts/localization.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/agents.js"></script>
+    <script src="scripts/ui.js"></script>
+    <script src="scripts/orchestrator.js"></script>
+    <script src="scripts/popup.js"></script>
+</body>
+</html>
